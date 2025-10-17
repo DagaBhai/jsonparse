@@ -51,9 +51,12 @@ class Parser:
         self.stack_ref = self._stack_init()
         self.queue_ref = self._queue_init()
 
-    def find_key(self, data, key):
+    def find_key(self, data, key, partial, case_sensitive):
         # type: (Union[dict, list, OrderedDict], str) -> list
         if not self._valid_key_input(data, key):
+            raise
+        
+        if partial and len(key)==0:
             raise
 
         self.stack_ref = self._stack_init()  # init a new queue every request
@@ -66,16 +69,19 @@ class Parser:
 
             elem = self._stack_pop()
 
-            if type(elem) is list:
+            if isinstance(elem,list):
                 self._stack_push_list_elem(elem)
             elif isinstance(elem, (dict, OrderedDict)):
-                value = self._stack_all_key_values_in_dict(key, elem)
+                value = self._stack_all_key_values_in_dict(key, elem, partial, case_sensitive)
                 if value:
                     for v in value:
-                        value_list.insert(0, v)
+                        if isinstance(v,list):
+                            value_list.extend([item for item in v])
+                        else:
+                            value_list.insert(0, v)
             else:  # according to RFC 7159, valid JSON can also contain a
-                # string, number, 'false', 'null', 'true'
-                pass  # discard these other values as they don't have a key
+                    # string, number, 'false', 'null', 'true'
+                    pass  # discard these other values as they don't have a key
 
         return value_list
 
@@ -241,7 +247,7 @@ class Parser:
                 self._stack_push(e)
                 self._stack_trace()
 
-    def _stack_all_key_values_in_dict(self, key, elem):
+    def _stack_all_key_values_in_dict(self, key, elem, partial, case_sensitive):
         # type: (str, Union[dict, OrderedDict]) -> list
         value_list = []
 
@@ -253,12 +259,21 @@ class Parser:
         if len(elem) <= 0:  # don't want an empty dict on the stack
             pass
         else:
-            for e in elem:
-                if e == key:
-                    value_list.append(elem[e])
+            value_list=[]
+            
+            for actual_key, value in elem.items():
+                match_key = actual_key if case_sensitive else actual_key.lower()
+                search_key = key if case_sensitive else key.lower()
+                if partial:
+                    if search_key in match_key:
+                        value_list.append(value)
                 else:
-                    self._stack_push(elem[e])
-                    self._stack_trace()
+                    if match_key == search_key:
+                        value_list.append(value)
+                if not (partial and search_key in match_key) and not (not partial and match_key == search_key):
+                    if isinstance(value, (dict, list, OrderedDict)):
+                        self._stack_push(value)
+                        self._stack_trace()
         return value_list
 
     def _stack_all_keys_values_in_dict(self, keys, elem):
