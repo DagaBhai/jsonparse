@@ -10,7 +10,6 @@ class TestParserComplexJSON:
 
     @pytest.fixture
     def complex_json(self):
-        
         return [
             {
                 "id": "0001",
