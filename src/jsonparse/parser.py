@@ -259,7 +259,6 @@ class Parser:
             pass
         else:
             value_list=[]
-            
             for actual_key, value in elem.items():
                 match_key = actual_key if case_sensitive else actual_key.lower()
                 search_key = key if case_sensitive else key.lower()
