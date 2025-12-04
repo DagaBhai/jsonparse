@@ -5,7 +5,7 @@ from typing import Union
 
 
 def find_key(data, key):
-    # type: (Union[dict, list], str) -> list
+    # type: (Union[dict, list, OrderedDict], str, bool, bool) -> list
     """
     Search JSON data that consists of key:value pairs for all instances of provided key. The data can have complex
     nested dictionaries and lists. If duplicate keys exist in the data (at any layer) all matching key values will
@@ -16,6 +16,13 @@ def find_key(data, key):
     data -- The python object representing JSON data with key:value pairs. This could be a dictionary or a list.
 
     key  -- The key that will be searched for in the JSON data. The key must be a string.
+
+    partial -- If set to True the search will perform a partial match on keys
+               This means the provided key may appear as a substring of the dictionary key
+               Default is False which results in exact key matches will be returned
+    
+    case_sensitive -- If set to True the key comparison will be case-sensitive
+                      Default is False which means 'Name' and 'name'  will be considered same
     """
     return Parser().find_key(data, key)
 
