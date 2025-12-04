@@ -137,7 +137,6 @@ class TestParserComplexJSON:
             parser.find_key(complex_json, 1234, partial=False, case_sensitive=True)
         except TypeError:
             assert True
-            
 
     def test_empty_key(self, parser, complex_json):
         """Pass empty key."""
@@ -145,6 +144,3 @@ class TestParserComplexJSON:
             parser.find_key(complex_json, "", partial=False, case_sensitive=True)
         except ValueError:
             assert True
-
-
-
