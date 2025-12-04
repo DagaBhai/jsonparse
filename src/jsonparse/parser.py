@@ -55,7 +55,6 @@ class Parser:
         # type: (Union[dict, list, OrderedDict], str, bool, bool) -> list
         if not self._valid_key_input(data, key):
             raise
-        
         if partial and len(key)==0:
             raise
 
