@@ -51,8 +51,8 @@ class Parser:
         self.stack_ref = self._stack_init()
         self.queue_ref = self._queue_init()
 
-    def find_key(self, data, key, partial, case_sensitive):
-        # type: (Union[dict, list, OrderedDict], str) -> list
+    def find_key(self, data, key, partial=False, case_sensitive=False):
+        # type: (Union[dict, list, OrderedDict], str, bool, bool) -> list
         if not self._valid_key_input(data, key):
             raise
         
@@ -248,7 +248,7 @@ class Parser:
                 self._stack_trace()
 
     def _stack_all_key_values_in_dict(self, key, elem, partial, case_sensitive):
-        # type: (str, Union[dict, OrderedDict]) -> list
+        # type: (str, Union[dict, OrderedDict], bool, bool) -> list
         value_list = []
 
         if not isinstance(elem, (dict, OrderedDict)):
